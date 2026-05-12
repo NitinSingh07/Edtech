@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  ENGINEER
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum Status {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  P1
+  P2
+  P3
+  P4
+}
+
+enum Category {
+  BUG
+  SECURITY
+  PERFORMANCE
+  OUTAGE
+  NETWORK
+  DATABASE
+  OTHER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  role          Role      @default(ENGINEER)
+  department    String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  reportedIncidents Incident[] @relation("ReportedBy")
+  assignedIncidents Incident[] @relation("AssignedTo")
+  comments          Comment[]
+  activityLogs      ActivityLog[]
+
+  @@map("users")
+}
+
+model Incident {
+  id           String    @id @default(cuid())
+  title        String
+  description  String    @db.Text
+  severity     Severity  @default(MEDIUM)
+  status       Status    @default(OPEN)
+  priority     Priority  @default(P3)
+  category     Category  @default(OTHER)
+  
+  // Timestamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+
+  // Reporting/Assignment
+  reportedById String
+  reportedBy   User      @relation("ReportedBy", fields: [reportedById], references: [id])
+  assignedToId String?
+  assignedTo   User?     @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  // Sub-entities
+  comments     Comment[]
+  activityLogs ActivityLog[]
+  aiSuggestions AISuggestion[]
+
+  @@map("incidents")
+  @@index([status])
+  @@index([severity])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String   // e.g., "STATUS_CHANGE", "ASSIGNMENT", "COMMENT_ADDED"
+  details    String?  @db.Text
+  metadata   Json?    // For storing previous/new values
+  createdAt  DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  
+  incidentId String?
+  incident   Incident? @relation(fields: [incidentId], references: [id], onDelete: SetNull)
+
+  @@map("activity_logs")
+}
+
+model AISuggestion {
+  id           String   @id @default(cuid())
+  aiSeverity   Severity
+  confidence   Float
+  suggestions  String[] // Array of step-by-step suggestions
+  rootCause    String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  incidentId   String
+  incident     Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@map("ai_suggestions")
+}
