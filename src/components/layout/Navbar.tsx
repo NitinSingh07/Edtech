@@ -29,10 +29,14 @@ interface NavbarProps {
   user?: User & { role?: string };
 }
 
+import { MobileSidebar } from "@/components/layout/MobileSidebar";
+
 const Navbar = ({ user }: NavbarProps) => {
   return (
     <div className="flex items-center p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <MobileSidebar />
       <div className="flex w-full items-center justify-between">
+
         <div className="hidden md:flex relative max-w-sm items-center ml-auto mr-4">
           <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
           <Input

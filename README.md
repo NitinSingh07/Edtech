@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResolvX 🚀 — AI-Powered Incident Management Platform
 
-## Getting Started
+**ResolvX** is a production-grade incident management system designed for modern engineering teams. It leverages **Google Gemini AI** to detect severity, identify root causes, and suggest resolution steps in real-time.
 
-First, run the development server:
+![ResolvX Dashboard Preview](https://github.com/NitinSingh07/Edtech/raw/main/public/preview.png)
 
+## ✨ Features
+
+- 🛠 **Full Incident Lifecycle:** Create, track, assign, and resolve incidents with a robust audit trail.
+- 🤖 **AI-Driven Insights:** Automatic severity detection and resolution suggestions powered by Gemini 2.0.
+- 📊 **Real-time Analytics:** Interactive dashboards for system health, MTTR, and workload distribution.
+- 👥 **Team Collaboration:** Shared activity streams, internal notes, and role-based access control.
+- 📱 **Fully Responsive:** Optimized for desktop and mobile with a premium dark-themed UI.
+- 🔒 **Secure Auth:** Powered by NextAuth.js v5 (Auth.js) with JWT-based sessions.
+
+## 🛠 Tech Stack
+
+- **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Database:** [Prisma](https://www.prisma.io/) (SQLite for local, PostgreSQL ready)
+- **AI:** [Vercel AI SDK](https://sdk.vercel.ai/) & [Google Gemini](https://aistudio.google.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
+- **Charts:** [Recharts](https://recharts.org/)
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/NitinSingh07/Edtech.git
+cd Edtech/resolvx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Setup Environment Variables
+Create a `.env` file in the root directory:
+```env
+DATABASE_URL="file:./dev.db"
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+GOOGLE_GENERATIVE_AI_API_KEY="your-gemini-key"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Setup Database
+```bash
+npx prisma db push
+npx prisma db seed
+```
 
-## Learn More
+### 5. Run the project
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 👤 Seed Accounts (Default password: `password123`)
+- **Admin:** `admin@resolvx.com`
+- **Manager:** `sarah@resolvx.com`
+- **Engineer:** `alex@resolvx.com`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with ❤️ by **Antigravity AI** for **House of Edtech**.

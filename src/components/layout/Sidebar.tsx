@@ -9,18 +9,20 @@ import {
   History, 
   Users, 
   Settings,
-  ShieldAlert
+  ShieldAlert,
+  ChevronRight,
+  LogOut
 } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 
-import { cn } from "@/lib/utils";
-import { Role } from "@prisma/client";
+import { cn, getInitials } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
-interface SidebarProps {
-  role?: Role;
-}
-
-const Sidebar = ({ role }: SidebarProps) => {
+const Sidebar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const role = session?.user?.role;
 
   const routes = [
     {
@@ -28,14 +30,14 @@ const Sidebar = ({ role }: SidebarProps) => {
       icon: LayoutDashboard,
       href: "/dashboard",
       active: pathname === "/dashboard",
-      color: "text-sky-500",
+      color: "text-blue-500",
     },
     {
       label: "Incidents",
       icon: AlertCircle,
       href: "/incidents",
       active: pathname.startsWith("/incidents"),
-      color: "text-red-500",
+      color: "text-rose-500",
     },
     {
       label: "Analytics",
@@ -53,31 +55,21 @@ const Sidebar = ({ role }: SidebarProps) => {
     },
   ];
 
-  // Admin/Manager only routes
   if (role === "ADMIN" || role === "MANAGER") {
     routes.push({
       label: "Team",
       icon: Users,
       href: "/team",
       active: pathname === "/team",
-      color: "text-purple-500",
+      color: "text-violet-500",
     });
   }
 
-  const footerRoutes = [
-    {
-      label: "Settings",
-      icon: Settings,
-      href: "/settings",
-      active: pathname === "/settings",
-    },
-  ];
-
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/dashboard" className="flex items-center pl-3 mb-10">
-          <div className="relative w-8 h-8 mr-4 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+    <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border shadow-2xl shadow-black/50">
+      <div className="px-6 py-8">
+        <Link href="/dashboard" className="flex items-center gap-3 mb-10 group">
+          <div className="h-9 w-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
             <ShieldAlert className="text-primary-foreground h-5 w-5" />
           </div>
           <h1 className="text-xl font-bold tracking-tight">
@@ -90,35 +82,63 @@ const Sidebar = ({ role }: SidebarProps) => {
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-foreground hover:bg-foreground/10 rounded-lg transition",
-                route.active ? "text-foreground bg-foreground/10" : "text-muted-foreground"
+                "group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200",
+                route.active 
+                  ? "bg-primary/10 text-primary" 
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-                {route.label}
-              </div>
+              <route.icon className={cn("h-5 w-5 mr-3 transition-colors", route.active ? route.color : "text-muted-foreground group-hover:text-foreground")} />
+              {route.label}
+              {route.active && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              )}
             </Link>
           ))}
         </div>
       </div>
-      <div className="px-3 py-2">
-        <div className="space-y-1">
-          {footerRoutes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-foreground hover:bg-foreground/10 rounded-lg transition",
-                route.active ? "text-foreground bg-foreground/10" : "text-muted-foreground"
-              )}
+
+      <div className="mt-auto p-4">
+        <div className="bg-muted/30 border border-border/50 rounded-2xl p-4 space-y-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-lg">
+              <AvatarImage src={session?.user?.image || ""} />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                {getInitials(session?.user?.name || "U")}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col truncate">
+              <span className="text-sm font-bold text-foreground truncate">
+                {session?.user?.name}
+              </span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-primary/70">
+                {session?.user?.role}
+              </span>
+            </div>
+          </div>
+          <div className="h-px bg-border/50 mx-1" />
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-muted-foreground hover:text-foreground justify-start px-2"
+              asChild
             >
-              <div className="flex items-center flex-1">
-                <route.icon className="h-5 w-5 mr-3" />
-                {route.label}
-              </div>
-            </Link>
-          ))}
+              <Link href="/settings">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Link>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 justify-start px-2"
+              onClick={() => signOut()}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Exit
+            </Button>
+          </div>
         </div>
       </div>
     </div>

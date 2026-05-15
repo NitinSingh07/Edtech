@@ -73,12 +73,28 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {session?.user?.name}. Here's an overview of the current system state.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
+          <p className="text-muted-foreground">
+            Welcome back, {session?.user?.name}. Here's the current pulse of your infrastructure.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl">
+          <div className="relative">
+            <div className="h-2.5 w-2.5 bg-emerald-500 rounded-full" />
+            <div className="absolute inset-0 h-2.5 w-2.5 bg-emerald-500 rounded-full animate-ping opacity-75" />
+          </div>
+          <span className="text-sm font-bold text-emerald-500 tracking-tight">
+            System Operational
+          </span>
+          <div className="h-4 w-px bg-emerald-500/20 mx-1" />
+          <span className="text-xs text-muted-foreground">
+            {openCount} active issues
+          </span>
+        </div>
       </div>
+
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
