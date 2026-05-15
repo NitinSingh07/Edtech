@@ -2,14 +2,14 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentIncidents } from "@/components/dashboard/RecentIncidents";
+import { SeverityChart } from "@/components/analytics/Charts";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { 
   AlertCircle, 
-  CheckCircle2, 
   Clock, 
   ShieldAlert,
   Zap
 } from "lucide-react";
-import { Severity, Status } from "@prisma/client";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -23,8 +23,8 @@ export default async function DashboardPage() {
     severityStats
   ] = await Promise.all([
     prisma.incident.count(),
-    prisma.incident.count({ where: { status: Status.OPEN } }),
-    prisma.incident.count({ where: { severity: Severity.CRITICAL } }),
+    prisma.incident.count({ where: { status: "OPEN" } }),
+    prisma.incident.count({ where: { severity: "CRITICAL" } }),
     prisma.incident.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
@@ -90,20 +90,22 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2">
           <RecentIncidents incidents={recentIncidents as any} />
         </div>
-        <div className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 flex flex-col items-center justify-center min-h-[300px]">
-          <h3 className="font-semibold text-lg self-start mb-6">Severity Distribution</h3>
-          <div className="flex-1 w-full flex items-center justify-center text-muted-foreground">
-             {/* Chart will go here in next commit */}
-             <div className="flex flex-col items-center gap-2">
-                <BarChart3 className="h-10 w-10 opacity-20" />
-                <span className="text-sm">Distribution visualization</span>
-             </div>
-          </div>
+        <div className="lg:col-span-1">
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">Severity Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SeverityChart 
+                data={severityStats.map(stat => ({
+                  name: stat.severity,
+                  value: stat._count._all
+                }))} 
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
 }
-
-// Helper icon for placeholder
-import { BarChart3 } from "lucide-react";

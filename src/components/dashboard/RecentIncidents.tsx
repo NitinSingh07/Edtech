@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Incident, User } from "@/types";
 import { SEVERITIES, STATUSES } from "@/lib/constants";
 import { cn, formatDate, getInitials } from "@/lib/utils";
 
 interface RecentIncidentsProps {
-  incidents: (Incident & { reportedBy: User; assignedTo?: User | null })[];
+  incidents: any[];
 }
 
 export const RecentIncidents = ({ incidents }: RecentIncidentsProps) => {
@@ -58,18 +57,18 @@ export const RecentIncidents = ({ incidents }: RecentIncidentsProps) => {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Badge className={cn("font-medium", STATUSES[incident.status].bgClass)}>
-                    {STATUSES[incident.status].label}
+                  <Badge className={cn("font-medium", STATUSES[incident.status as keyof typeof STATUSES]?.bgClass)}>
+                    {STATUSES[incident.status as keyof typeof STATUSES]?.label || incident.status}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div 
                       className="h-2 w-2 rounded-full" 
-                      style={{ backgroundColor: SEVERITIES[incident.severity].color }}
+                      style={{ backgroundColor: SEVERITIES[incident.severity as keyof typeof SEVERITIES]?.color }}
                     />
                     <span className="text-sm font-medium">
-                      {SEVERITIES[incident.severity].label}
+                      {SEVERITIES[incident.severity as keyof typeof SEVERITIES]?.label || incident.severity}
                     </span>
                   </div>
                 </TableCell>
@@ -77,7 +76,7 @@ export const RecentIncidents = ({ incidents }: RecentIncidentsProps) => {
                   {incident.assignedTo ? (
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6 border border-border">
-                        <AvatarImage src={incident.assignedTo.avatar || ""} />
+                        <AvatarImage src={incident.assignedTo.image || ""} />
                         <AvatarFallback className="text-[10px]">
                           {getInitials(incident.assignedTo.name)}
                         </AvatarFallback>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const LoginSchema = z.z.object({
+export const LoginSchema = z.object({
   email: z.string().email({
     message: "Email is required",
   }),
@@ -9,7 +9,7 @@ export const LoginSchema = z.z.object({
   }),
 });
 
-export const RegisterSchema = z.z.object({
+export const RegisterSchema = z.object({
   email: z.string().email({
     message: "Email is required",
   }),

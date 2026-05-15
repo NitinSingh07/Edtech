@@ -150,7 +150,7 @@ async function main() {
           incidentId: incident.id,
         },
       });
-      
+
       await prisma.activityLog.create({
         data: {
           action: "COMMENT_ADDED",

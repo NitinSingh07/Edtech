@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "prisma": {
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
     "dev": "next dev",
@@ -17,6 +17,7 @@
     "@base-ui/react": "^1.4.1",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.19.3",
+    "@radix-ui/react-slot": "^1.2.4",
     "ai": "^6.0.177",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
@@ -47,6 +48,7 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.22.0",
     "typescript": "^5.9.3"
   }
 }

@@ -6,45 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  ADMIN
-  MANAGER
-  ENGINEER
-}
-
-enum Severity {
-  CRITICAL
-  HIGH
-  MEDIUM
-  LOW
-}
-
-enum Status {
-  OPEN
-  INVESTIGATING
-  RESOLVED
-  CLOSED
-}
-
-enum Priority {
-  P1
-  P2
-  P3
-  P4
-}
-
-enum Category {
-  BUG
-  SECURITY
-  PERFORMANCE
-  OUTAGE
-  NETWORK
-  DATABASE
-  OTHER
 }
 
 model User {
@@ -52,7 +15,7 @@ model User {
   name          String?
   email         String?   @unique
   password      String?
-  role          Role      @default(ENGINEER)
+  role          String    @default("ENGINEER") // Role: ADMIN, MANAGER, ENGINEER
   department    String?
   image         String?
   createdAt     DateTime  @default(now())
@@ -70,11 +33,11 @@ model User {
 model Incident {
   id           String    @id @default(cuid())
   title        String
-  description  String    @db.Text
-  severity     Severity  @default(MEDIUM)
-  status       Status    @default(OPEN)
-  priority     Priority  @default(P3)
-  category     Category  @default(OTHER)
+  description  String
+  severity     String    @default("MEDIUM") // Severity: CRITICAL, HIGH, MEDIUM, LOW
+  status       String    @default("OPEN")   // Status: OPEN, INVESTIGATING, RESOLVED, CLOSED
+  priority     String    @default("P3")     // Priority: P1, P2, P3, P4
+  category     String    @default("OTHER")  // Category: BUG, SECURITY, PERFORMANCE, OUTAGE, NETWORK, DATABASE, OTHER
   
   // Timestamps
   createdAt    DateTime  @default(now())
@@ -100,7 +63,7 @@ model Incident {
 
 model Comment {
   id         String   @id @default(cuid())
-  content    String   @db.Text
+  content    String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -116,8 +79,8 @@ model Comment {
 model ActivityLog {
   id         String   @id @default(cuid())
   action     String   // e.g., "STATUS_CHANGE", "ASSIGNMENT", "COMMENT_ADDED"
-  details    String?  @db.Text
-  metadata   Json?    // For storing previous/new values
+  details    String?
+  metadata   String?  // SQLite doesn't support Json well, using string for now
   createdAt  DateTime @default(now())
 
   userId     String
@@ -131,10 +94,10 @@ model ActivityLog {
 
 model AISuggestion {
   id           String   @id @default(cuid())
-  aiSeverity   Severity
+  aiSeverity   String
   confidence   Float
-  suggestions  String[] // Array of step-by-step suggestions
-  rootCause    String?  @db.Text
+  suggestions  String // SQLite doesn't support arrays, using comma-separated or JSON string
+  rootCause    String?
   createdAt    DateTime @default(now())
 
   incidentId   String
